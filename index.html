@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DALe EduHub - Dream • Act • Learn</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            margin-right: 10px;
+        }
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .logo-text p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .nav-links {
+            display: none;
+        }
+
+        .menu-icon {
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 1rem 60px;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .btn {
+            display: inline-block;
+            background: white;
+            color: #764ba2;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Section Titles */
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-title h3 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .section-title p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        /* Pricing Cards */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .pricing-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .pricing-card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .features li {
+            margin-bottom: 10px;
+        }
+
+        /* Form */
+        .registration-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Testimonials */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+
+        .testimonial-card p {
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .testimonial-author {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .testimonial-role {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Subjects */
+        .subjects-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .subject-tag {
+            background: #f0f0f0;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* Teaching Methods */
+        .methods-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .method-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .method-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .nav-links {
+                display: flex;
+                gap: 20px;
+            }
+
+            .nav-links a {
+                color: white;
+                text-decoration: none;
+            }
+
+            .menu-icon {
+                display: none;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pricing-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .testimonials-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .methods-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .testimonials-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <span class="logo-icon">🎓</span>
+                <div class="logo-text">
+                    <h1>DALe EduHub</h1>
+                    <p>Dream • Act • Learn</p>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="#home">Laman Utama</a>
+                <a href="#subjects">Subjek</a>
+                <a href="#pricing">Yuran</a>
+                <a href="#methods">Kaedah</a>
+                <a href="#testimonials">Testimoni</a>
+                <a href="#register">Daftar</a>
+            </div>
+            <div class="menu-icon" onclick="toggleMenu()">☰</div>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <h2>Selamat Datang ke DALe EduHub</h2>
+        <p>Pusat tuisyen dalam talian dengan pendekatan Industry-Linked Learning</p>
+        <a href="#register" class="btn">Daftar Sekarang</a>
+    </section>
+
+    <div class="container">
+        <div class="section-title">
+            <h3>Mengenai Kami</h3>
+            <p>Pusat tuisyen dalam talian yang berfokus kepada penguasaan ilmu dengan pendekatan Industry-Linked Learning. Setiap topik dikaitkan dengan realiti dunia pekerjaan.</p>
+        </div>
+    </div>
+
+    <div id="subjects" class="container">
+        <div class="section-title">
+            <h3>Subjek Yang Ditawarkan</h3>
+            <p>Pilih subjek mengikut peringkat anda</p>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card">
+                <h4>📐 Tingkatan 1 - 3</h4>
+                <p>Menengah Rendah</p>
+                <div class="subjects-list">
+                    <span class="subject-tag">Matematik</span>
+                    <span class="subject-tag">Asas Sains Komputer</span>
+                    <span class="subject-tag">Bahasa Jepun</span>
+                </div>
+                <p><strong>Yuran:</strong> RM200/bulan</p>
+                <p><strong>Kelas:</strong> 1 jam/minggu (4 kelas/bulan)</p>
+            </div>
+
+            <div class="card">
+                <h4>💻 Tingkatan 4 - 5</h4>
+                <p>Menengah Atas</p>
+                <div class="subjects-list">
+                    <span class="subject-tag">Matematik</span>
+                    <span class="subject-tag">Sains Komputer</span>
+                    <span class="subject-tag">Bahasa Jepun</span>
+                </div>
+                <p><strong>Yuran:</strong> RM220/bulan</p>
+                <p><strong>Kelas:</strong> 1 jam/minggu (4 kelas/bulan)</p>
+            </div>
+
+            <div class="card">
+                <h4>📝 Platform Kelas</h4>
+                <p><strong>Google Meet</strong> - Kelas secara langsung</p>
+                <p><strong>Google Classroom</strong> - Modul dan latihan</p>
+                <p>Modul disediakan lengkap untuk setiap subjek</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="pricing" class="container">
+        <div class="section-title">
+            <h3>Yuran Bulanan</h3>
+            <p>Pakej pembelajaran mengikut peringkat</p>
+        </div>
+
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h4>Menengah Rendah</h4>
+                <div class="price">RM200</div>
+                <ul class="features">
+                    <li>✓ Tingkatan 1 - 3</li>
+                    <li>✓ 4 kelas/bulan</li>
+                    <li>✓ 1 jam/kelas</li>
+                    <li>✓ Google Meet & Classroom</li>
+                    <li>✓ Modul lengkap</li>
+                </ul>
+                <a href="#register" class="btn">Pilih Pakej</a>
+            </div>
+
+            <div class="pricing-card">
+                <h4>Menengah Atas</h4>
+                <div class="price">RM220</div>
+                <ul class="features">
+                    <li>✓ Tingkatan 4 - 5</li>
+                    <li>✓ 4 kelas/bulan</li>
+                    <li>✓ 1 jam/kelas</li>
+                    <li>✓ Google Meet & Classroom</li>
+                    <li>✓ Modul lengkap</li>
+                </ul>
+                <a href="#register" class="btn">Pilih Pakej</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="methods" class="container">
+        <div class="section-title">
+            <h3>Pendekatan Pembelajaran Kami</h3>
+            <p>Menggunakan pendekatan Industry-Linked Learning di mana setiap topik dikaitkan dengan realiti dunia pekerjaan</p>
+        </div>
+
+        <div class="methods-grid">
+            <div class="method-item">
+                <div class="method-icon">📖</div>
+                <h4>Teknik Penceritaan</h4>
+                <p>Mengaitkan latihan dengan contoh dunia pekerjaan sebenar supaya pelajar nampak 'kepentingan' apa yang dipelajari.</p>
+            </div>
+
+            <div class="method-item">
+                <div class="method-icon">📺</div>
+                <h4>Demonstrasi & Visual</h4>
+                <p>Tunjuk cara (step-by-step) untuk jalan kira Matematik dan Live Coding untuk subjek Sains Komputer.</p>
+            </div>
+
+            <div class="method-item">
+                <div class="method-icon">📝</div>
+                <h4>Latih Tubi Berperingkat</h4>
+                <p>Menyediakan latihan dari tahap asas ke tahap KBAT (peringkat demi peringkat) bagi membina keyakinan pelajar.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="testimonials" class="container">
+        <div class="section-title">
+            <h3>Testimoni</h3>
+            <p>Apa Kata Mereka? Maklum balas dari ibu bapa dan pelajar yang telah mengikuti kelas bersama Cikgu Dayang</p>
+        </div>
+
+        <div class="testimonials-grid" id="testimonials-list">
+            <!-- Testimonials akan diisi dari database -->
+        </div>
+    </div>
+
+    <div id="register" class="container">
+        <div class="section-title">
+            <h3>Pendaftaran Pelajar</h3>
+            <p>Daftar sekarang untuk kelas percubaan percuma</p>
+        </div>
+
+        <form class="registration-form" id="registrationForm">
+            <div class="form-group">
+                <label for="name">Nama Penuh Pelajar</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="parentName">Nama Ibu/Bapa</label>
+                <input type="text" id="parentName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="parentPhone">No. Telefon</label>
+                <input type="tel" id="parentPhone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="parentEmail">Email</label>
+                <input type="email" id="parentEmail" required>
+            </div>
+
+            <div class="form-group">
+                <label for="level">Peringkat</label>
+                <select id="level" required>
+                    <option value="">Pilih peringkat</option>
+                    <option value="Tingkatan 1">Tingkatan 1</option>
+                    <option value="Tingkatan 2">Tingkatan 2</option>
+                    <option value="Tingkatan 3">Tingkatan 3</option>
+                    <option value="Tingkatan 4">Tingkatan 4</option>
+                    <option value="Tingkatan 5">Tingkatan 5</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="subject">Subjek</label>
+                <select id="subject" required>
+                    <option value="">Pilih subjek</option>
+                    <option value="Matematik">Matematik</option>
+                    <option value="Asas Sains Komputer">Asas Sains Komputer</option>
+                    <option value="Sains Komputer">Sains Komputer</option>
+                    <option value="Bahasa Jepun">Bahasa Jepun</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="message">Mesej (jika ada)</label>
+                <textarea id="message" rows="4"></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">Daftar Sekarang</button>
+        </form>
+    </div>
+
+    <footer>
+        <p>© 2024 DALe EduHub. All rights reserved.</p>
+        <p>Dream • Act • Learn</p>
+    </footer>
+
+    <script>
+        // Supabase configuration (replace with your actual values)
+        const supabaseUrl = 'YOUR_SUPABASE_URL';
+        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+
+        function toggleMenu() {
+            // Simple menu toggle for mobile
+            alert('Menu: Home, Subjek, Yuran, Kaedah, Testimoni, Daftar');
+        }
+
+        // Load testimonials
+        async function loadTestimonials() {
+            try {
+                const response = await fetch(`${supabaseUrl}/rest/v1/testimonials?select=*&active=eq.true`, {
+                    headers: {
+                        'apikey': supabaseKey,
+                        'Authorization': `Bearer ${supabaseKey}`
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Failed to fetch testimonials');
+                
+                const testimonials = await response.json();
+                const container = document.getElementById('testimonials-list');
+                
+                if (testimonials && testimonials.length > 0) {
+                    container.innerHTML = testimonials.map(t => `
+                        <div class="testimonial-card">
+                            <p>"${t.message}"</p>
+                            <div class="testimonial-author">- ${t.name}</div>
+                            <div class="testimonial-role">${t.role} • ${t.subject}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading testimonials:', error);
+                // Fallback testimonials
+                const container = document.getElementById('testimonials-list');
+                container.innerHTML = `
+                    <div class="testimonial-card">
+                        <p>"Kelas dengan cikgu Dayang sangat okay. Cikgu tak berat mulut untuk ulang semula kalau saya tak faham. Cikgu pun ajar perlahan tak terlalu laju."</p>
+                        <div class="testimonial-author">- Cik Syuhada</div>
+                        <div class="testimonial-role">Pelajar • Matematik</div>
+                    </div>
+                    <div class="testimonial-card">
+                        <p>"Sebelum ini, anak lelaki saya pernah belajar dengan cikgu Dayang bagi kelas intensif sebelum SPM. Kali ini, anak perempuan saya pulak yang menjadi murid kepada cikgu Dayang. Alhamdulilah, kedua-dua anak saya okay dan faham dengan kelas cikgu Dayang."</p>
+                        <div class="testimonial-author">- Encik Azimy</div>
+                        <div class="testimonial-role">Ibu Bapa • Sains Komputer</div>
+                    </div>
+                    <div class="testimonial-card">
+                        <p>"Terima kasih cikgu Dayang kerana sangat sabar dalam mengajar anak saya yang pendiam."</p>
+                        <div class="testimonial-author">- Puan Basyirah</div>
+                        <div class="testimonial-role">Ibu Bapa • Matematik</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const studentData = {
+                name: document.getElementById('name').value,
+                parent_name: document.getElementById('parentName').value,
+                parent_phone: document.getElementById('parentPhone').value,
+                parent_email: document.getElementById('parentEmail').value,
+                student_level: document.getElementById('level').value,
+                subject: document.getElementById('subject').value
+            };
+
+            try {
+                const response = await fetch(`${supabaseUrl}/rest/v1/students`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': supabaseKey,
+                        'Authorization': `Bearer ${supabaseKey}`
+                    },
+                    body: JSON.stringify(studentData)
+                });
+
+                if (response.ok) {
+                    alert('Pendaftaran berjaya! Kami akan menghubungi anda tidak lama lagi.');
+                    this.reset();
+                } else {
+                    alert('Pendaftaran gagal. Sila cuba lagi.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Ralat berlaku. Sila cuba lagi.');
+            }
+        });
+
+        // Load testimonials on page load
+        document.addEventListener('DOMContentLoaded', loadTestimonials);
+    </script>
+</body>
+</html>
