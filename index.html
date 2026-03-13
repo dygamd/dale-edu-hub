@@ -13,20 +13,31 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* Debug helper - akan tunjuk kalau ada problem */
+        .debug-error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px;
+            border-left: 4px solid #c62828;
+            font-family: monospace;
+        }
+    </style>
 </head>
 <body>
 
     <!-- Toast notification -->
-    <div id="toast" class="toast">
-        <span id="toastMessage"></span>
-    </div>
+    <div id="toast" class="toast"></div>
 
     <!-- Navigation -->
     <header>
         <nav>
             <a href="#home" class="logo">
-                <img src="images/logo.png" alt="DALe EduHub" class="logo-img">
+                <img src="images/logo.png" alt="DALe EduHub" class="logo-img" onerror="this.src='https://via.placeholder.com/45'">
                 <div class="logo-text">
                     <h1>DALe EduHub</h1>
                     <p>Dream • Act • Learn</p>
@@ -163,8 +174,11 @@
                 <p>Memuatkan testimoni...</p>
             </div>
             
+            <!-- Debug container - akan tunjuk error kalau ada -->
+            <div id="testimoniDebug" style="display: none;" class="debug-error"></div>
+            
             <!-- Swiper Carousel -->
-            <div class="swiper mySwiper" id="testimoniSwiper">
+            <div class="swiper mySwiper" id="testimoniSwiper" style="display: none;">
                 <div class="swiper-wrapper" id="testimoniWrapper"></div>
                 <div class="swiper-pagination"></div>
             </div>
@@ -182,7 +196,7 @@
             <div class="tutor-section">
                 <div class="tutor-header">
                     <div class="tutor-avatar">
-                        <img src="images/profile.png" alt="Cikgu Dayang Ahmad">
+                        <img src="images/profile.png" alt="Cikgu Dayang Ahmad" onerror="this.src='https://via.placeholder.com/180'">
                     </div>
                     <div class="tutor-info">
                         <h2>Cikgu Dayang Ahmad</h2>
@@ -342,7 +356,7 @@
     <footer>
         <div class="footer-grid">
             <div class="footer-col">
-                <img src="images/logo.png" alt="DALe EduHub" class="footer-logo">
+                <img src="images/logo.png" alt="DALe EduHub" class="footer-logo" onerror="this.src='https://via.placeholder.com/70'">
                 <p>Pusat kecemerlangan akademik digital yang memfokuskan kepada pembangunan potensi pelajar melalui teknologi dan disiplin.</p>
                 <div class="footer-slogan">Dream • Act • Learn</div>
             </div>
@@ -368,6 +382,6 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="dale-eduhub/script/script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
