@@ -9,14 +9,7 @@ let mobileMenuOpen = false;
 window.showPage = function(pageName) {
     console.log('Navigating to:', pageName);
     
-    // First, verify all pages exist
-    const pages = ['home', 'program', 'tutor', 'daftar'];
-    pages.forEach(p => {
-        const el = document.getElementById(p + '-page');
-        console.log(`Page ${p}-page exists:`, !!el);
-    });
-    
-    // Hide all pages with explicit style
+    // Hide all pages
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
         page.style.display = 'none';
@@ -42,7 +35,7 @@ window.showPage = function(pageName) {
         homePage.style.display = 'block';
     }
     
-    // Update active nav link
+    // Update active nav link (excluding the Daftar button)
     document.querySelectorAll('.nav-links a:not(.btn-small)').forEach(link => {
         link.classList.remove('active');
     });
@@ -172,19 +165,9 @@ window.loadTestimonials = function() {
     }
 };
 
-// ==================== INITIALIZE ====================
+// ==================== FORM SUBMISSION ====================
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded');
-    
-    // Log all pages
-    const pages = ['home-page', 'program-page', 'tutor-page', 'daftar-page'];
-    pages.forEach(pageId => {
-        const element = document.getElementById(pageId);
-        console.log(`${pageId}:`, element ? 'Found' : 'Not found');
-        if (element) {
-            console.log('  HTML:', element.outerHTML.substring(0, 100) + '...');
-        }
-    });
     
     // Ensure home page is visible
     const homePage = document.getElementById('home-page');
@@ -193,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
         homePage.style.display = 'block';
     }
     
-    // Hide other pages
+    // Hide other pages initially
     ['program-page', 'tutor-page', 'daftar-page'].forEach(pageId => {
         const page = document.getElementById(pageId);
         if (page) {
@@ -205,16 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load testimonials
     loadTestimonials();
     
-    // Handle window resize for mobile menu
-    window.addEventListener('resize', function() {
-        if (window.innerWidth > 768 && mobileMenuOpen) {
-            toggleMobileMenu();
-        }
-    });
-});
-
-// ==================== FORM SUBMISSION ====================
-document.addEventListener('DOMContentLoaded', function() {
+    // Form submission
     const form = document.getElementById('whatsappForm');
     if (form) {
         form.addEventListener('submit', async function(e) {
@@ -282,4 +256,11 @@ document.addEventListener('DOMContentLoaded', function() {
             formLoading.style.display = 'none';
         });
     }
+    
+    // Handle window resize for mobile menu
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && mobileMenuOpen) {
+            toggleMobileMenu();
+        }
+    });
 });
