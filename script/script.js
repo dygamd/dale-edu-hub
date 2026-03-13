@@ -1,20 +1,8 @@
 // ==================== SUPABASE CONFIG ====================
-const SUPABASE_URL = 'https://ktfhmqvuhqlzhkotorsi.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_kOz2lNp6289X7bajR5qmTw_Q1_Vh1zf';
-
-console.log('🔧 Initializing Supabase with:');
-console.log('URL:', SUPABASE_URL);
-console.log('Key:', SUPABASE_KEY.substring(0, 15) + '...');
-
-// ✅ Cara BETUL - dengan headers yang tepat
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-    global: {
-        headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`
-        }
-    }
-});
+const supabase = window.supabase.createClient(
+    'https://ktfhmqvuhqlzhkotorsi.supabase.co',
+    'sb_publishable_kOz2lNp6289X7bajR5qmTw_Q1_Vh1zf'
+);
 
 // ==================== LOAD TESTIMONIALS ====================
 async function loadTestimonials() {
@@ -24,14 +12,12 @@ async function loadTestimonials() {
     const container = document.getElementById('testimoniContainer');
     
     if (!container) {
-        console.error('Container not found!');
+        console.error('❌ Container not found!');
         return;
     }
     
     try {
-        // Test query dengan headers yang betul
-        console.log('📡 Sending request to Supabase...');
-        
+        // ✅ Query terus ke table 'testimonials' (bukan 'todos')
         const { data, error } = await supabase
             .from('testimonials')
             .select('*')
@@ -39,65 +25,35 @@ async function loadTestimonials() {
 
         if (error) {
             console.error('❌ Supabase error:', error);
-            console.log('Error details:', JSON.stringify(error, null, 2));
-            useFallbackTestimonials();
-            return;
+            throw error;
         }
 
-        console.log('✅ Supabase response:', data);
-        
         if (data && data.length > 0) {
-            displayTestimonials(data);
+            console.log(`✅ Got ${data.length} testimonials:`, data);
+            
+            // Papar dalam container
+            container.innerHTML = data.map(t => `
+                <div class="testi-card">
+                    <p>"${t.message}"</p>
+                    <h4>${t.name}</h4>
+                    <small>${t.subject}</small>
+                </div>
+            `).join('');
+            
+            loading.style.display = 'none';
         } else {
-            console.log('No data found, using fallback');
-            useFallbackTestimonials();
+            console.log('⚠️ No data found');
+            container.innerHTML = '<p>Tiada testimoni buat masa ini.</p>';
+            loading.style.display = 'none';
         }
     } catch (err) {
-        console.error('❌ Exception:', err);
-        useFallbackTestimonials();
+        console.error('❌ Error:', err);
+        container.innerHTML = '<p>Gagal memuatkan testimoni.</p>';
+        loading.style.display = 'none';
     }
 }
 
-// ==================== DISPLAY ====================
-function displayTestimonials(testimonials) {
-    const container = document.getElementById('testimoniContainer');
-    const loading = document.getElementById('testimoniLoading');
-    
-    container.innerHTML = testimonials.map(t => `
-        <div class="testi-card">
-            <p>"${t.message}"</p>
-            <h4>${t.name}</h4>
-            <small>${t.subject}</small>
-        </div>
-    `).join('');
-    
-    loading.style.display = 'none';
-    console.log('✅ Testimonials displayed');
-}
-
-// ==================== FALLBACK ====================
-function useFallbackTestimonials() {
-    const dummyData = [
-        {
-            name: "Cik Syuhada",
-            subject: "Matematik (Menengah Atas)",
-            message: "Kelas dengan cikgu Dayang sangat okay."
-        },
-        {
-            name: "Encik Azimy",
-            subject: "Sains Komputer",
-            message: "Anak saya okay dan faham."
-        },
-        {
-            name: "Puan Basyirah",
-            subject: "Matematik (Menengah Rendah)",
-            message: "Terima kasih cikgu Dayang."
-        }
-    ];
-    displayTestimonials(dummyData);
-}
-
-// ==================== WHATSAPP ====================
+// ==================== WHATSAPP FORM ====================
 document.getElementById('whatsappForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -105,24 +61,28 @@ document.getElementById('whatsappForm')?.addEventListener('submit', async functi
     const phone = document.getElementById('phone').value;
     
     if (!name || !phone) {
-        alert('Sila isi semua');
+        alert('Sila isi Nama dan No Telefon');
         return;
     }
     
     try {
+        // Simpan ke Supabase
         await supabase.from('students').insert([{
             name: name,
             parent_phone: phone
         }]);
-        console.log('✅ Saved to Supabase');
+        
+        // Buka WhatsApp
+        const waText = `Salam Cikgu Dayang, saya ${name} ingin mendaftar. No telefon: ${phone}`;
+        window.open(`https://wa.me/60128258869?text=${encodeURIComponent(waText)}`, '_blank');
+        
+        alert('Pendaftaran dihantar!');
+        this.reset();
     } catch (err) {
-        console.error('❌ Error saving:', err);
+        console.error('Error:', err);
+        alert('Gagal hantar pendaftaran');
     }
-    
-    const waText = `Salam Cikgu Dayang, saya ${name}. No telefon: ${phone}`;
-    window.open(`https://wa.me/60128258869?text=${encodeURIComponent(waText)}`, '_blank');
-    alert('Pendaftaran dihantar!');
 });
 
-// ==================== INIT ====================
+// ==================== START ====================
 document.addEventListener('DOMContentLoaded', loadTestimonials);
