@@ -6,27 +6,43 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ==================== PAGE NAVIGATION ====================
 let mobileMenuOpen = false;
 
-// Pastikan function ni available dalam global scope
 window.showPage = function(pageName) {
     console.log('Navigating to:', pageName);
     
-    // Hide all pages
+    // First, verify all pages exist
+    const pages = ['home', 'program', 'tutor', 'daftar'];
+    pages.forEach(p => {
+        const el = document.getElementById(p + '-page');
+        console.log(`Page ${p}-page exists:`, !!el);
+    });
+    
+    // Hide all pages with explicit style
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
+        page.style.display = 'none';
     });
     
     // Show selected page
     const targetPage = document.getElementById(pageName + '-page');
     if (targetPage) {
         targetPage.classList.add('active');
+        targetPage.style.display = 'block';
         console.log('Showing page:', pageName + '-page');
+        
+        // Scroll to top
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     } else {
         console.error('Page not found:', pageName + '-page');
         // Fallback to home
-        document.getElementById('home-page').classList.add('active');
+        const homePage = document.getElementById('home-page');
+        homePage.classList.add('active');
+        homePage.style.display = 'block';
     }
     
-    // Update active nav link - only for main nav links (not btn-small)
+    // Update active nav link
     document.querySelectorAll('.nav-links a:not(.btn-small)').forEach(link => {
         link.classList.remove('active');
     });
@@ -36,9 +52,6 @@ window.showPage = function(pageName) {
     if (activeNav) {
         activeNav.classList.add('active');
     }
-    
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
     
     // Close mobile menu if open
     if (mobileMenuOpen) {
@@ -137,11 +150,15 @@ window.loadTestimonials = function() {
     
     // Hide loading, show swiper
     if (loading) loading.style.display = 'none';
-    if (swiper) swiper.style.display = 'block';
-    
-    // Initialize Swiper
-    if (document.querySelector(".mySwiper")) {
-        new Swiper(".mySwiper", {
+    if (swiper) {
+        swiper.style.display = 'block';
+        
+        // Initialize Swiper
+        if (window.testimonialSwiper) {
+            window.testimonialSwiper.destroy();
+        }
+        
+        window.testimonialSwiper = new Swiper(".mySwiper", {
             slidesPerView: 1,
             spaceBetween: 15,
             loop: true,
@@ -155,14 +172,49 @@ window.loadTestimonials = function() {
     }
 };
 
-// ==================== FORM SUBMISSION ====================
+// ==================== INITIALIZE ====================
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded');
+    
+    // Log all pages
+    const pages = ['home-page', 'program-page', 'tutor-page', 'daftar-page'];
+    pages.forEach(pageId => {
+        const element = document.getElementById(pageId);
+        console.log(`${pageId}:`, element ? 'Found' : 'Not found');
+        if (element) {
+            console.log('  HTML:', element.outerHTML.substring(0, 100) + '...');
+        }
+    });
+    
+    // Ensure home page is visible
+    const homePage = document.getElementById('home-page');
+    if (homePage) {
+        homePage.classList.add('active');
+        homePage.style.display = 'block';
+    }
+    
+    // Hide other pages
+    ['program-page', 'tutor-page', 'daftar-page'].forEach(pageId => {
+        const page = document.getElementById(pageId);
+        if (page) {
+            page.classList.remove('active');
+            page.style.display = 'none';
+        }
+    });
     
     // Load testimonials
     loadTestimonials();
     
-    // Form submission
+    // Handle window resize for mobile menu
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && mobileMenuOpen) {
+            toggleMobileMenu();
+        }
+    });
+});
+
+// ==================== FORM SUBMISSION ====================
+document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('whatsappForm');
     if (form) {
         form.addEventListener('submit', async function(e) {
@@ -187,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             try {
-                // Try save to Supabase
+                // Save to Supabase
                 await supabase.from('students').insert([{
                     name: formData.studentName,
                     parent_name: formData.parentName || '',
@@ -218,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 form.reset();
             } catch (error) {
-                console.error(error);
+                console.error('Form error:', error);
                 const toast = document.getElementById('toast');
                 toast.className = 'toast error show';
                 document.getElementById('toastMessage').textContent = 'Ralat berlaku';
@@ -230,11 +282,4 @@ document.addEventListener('DOMContentLoaded', function() {
             formLoading.style.display = 'none';
         });
     }
-    
-    // Handle window resize for mobile menu
-    window.addEventListener('resize', function() {
-        if (window.innerWidth > 768 && mobileMenuOpen) {
-            toggleMobileMenu();
-        }
-    });
 });
