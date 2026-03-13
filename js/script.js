@@ -1,13 +1,14 @@
-// ==================== SUPABASE CONFIGURATION ====================
+// ==================== SUPABASE CONFIG ====================
 const SUPABASE_URL = 'https://ktfhmqvuhqlzhkotorsi.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_kOz2lNp6289X7bajR5qmTw_Q1_Vh1zf';
-
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ==================== PAGE NAVIGATION ====================
 let mobileMenuOpen = false;
 
 function showPage(pageName) {
+    console.log('Navigating to:', pageName);
+    
     // Hide all pages
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
@@ -32,11 +33,6 @@ function showPage(pageName) {
     
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // If testimonials page, load data
-    if (pageName === 'testimoni') {
-        loadTestimonials();
-    }
     
     // Close mobile menu if open
     if (mobileMenuOpen) {
@@ -74,7 +70,7 @@ function toggleMobileMenu() {
     }
 }
 
-// ==================== HELPER FUNCTIONS ====================
+// Toast function
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toastMessage');
@@ -86,7 +82,7 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-// ==================== LOAD TESTIMONIALS ====================
+// Load testimonials function
 async function loadTestimonials() {
     try {
         const { data: testimonials, error } = await supabase
@@ -113,17 +109,17 @@ function useDummyTestimonials() {
         {
             name: "Cik Syuhada",
             subject: "Matematik (Menengah Atas)",
-            message: "Kelas dengan cikgu Dayang sangat okay. Cikgu tak berat mulut untuk ulang semula kalau saya tak faham. Cikgu pun ajar perlahan tak terlalu laju."
+            message: "Kelas dengan cikgu Dayang sangat okay. Cikgu tak berat mulut untuk ulang semula kalau saya tak faham."
         },
         {
             name: "Encik Azimy",
             subject: "Sains Komputer",
-            message: "Sebelum ini, anak lelaki saya pernah belajar dengan cikgu Dayang bagi kelas intensif sebelum SPM. Kali ini, anak perempuan saya pulak yang menjadi murid kepada cikgu Dayang. Alhamdulilah, kedua-dua anak saya okay dan faham."
+            message: "Anak saya okay dan faham dengan kelas cikgu Dayang."
         },
         {
             name: "Puan Basyirah",
             subject: "Matematik (Menengah Rendah)",
-            message: "Terima kasih cikgu Dayang kerana sangat sabar dalam mengajar anak saya yang pendiam."
+            message: "Terima kasih cikgu Dayang kerana sangat sabar."
         }
     ];
     renderTestimonials(dummyTestimonials);
@@ -154,19 +150,12 @@ function renderTestimonials(testimonials) {
     loading.style.display = 'none';
     swiper.style.display = 'block';
     
-    // Initialize Swiper
     new Swiper(".mySwiper", {
         slidesPerView: 1,
         spaceBetween: 15,
         loop: true,
-        autoplay: {
-            delay: 4000,
-            disableOnInteraction: false,
-        },
-        pagination: {
-            el: ".swiper-pagination",
-            clickable: true,
-        },
+        autoplay: { delay: 4000 },
+        pagination: { el: ".swiper-pagination", clickable: true },
         breakpoints: {
             640: { slidesPerView: 2 },
             1024: { slidesPerView: 3 },
@@ -174,9 +163,45 @@ function renderTestimonials(testimonials) {
     });
 }
 
-// ==================== SAVE REGISTRATION ====================
-async function saveRegistration(formData) {
+// Form submission
+document.getElementById('whatsappForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const formLoading = document.getElementById('formLoading');
+    const form = document.getElementById('whatsappForm');
+    
+    // Validate
+    const studentName = document.getElementById('stuName').value;
+    const parentEmail = document.getElementById('parentEmail').value;
+    const parentPhone = document.getElementById('parentPhone').value;
+    const level = document.getElementById('stuLevel').value;
+    const classType = document.getElementById('classType').value;
+    const subject = document.getElementById('stuSubject').value;
+
+    if (!studentName || !parentEmail || !parentPhone || !level || !classType || !subject) {
+        showToast('Sila lengkapkan semua medan wajib', 'error');
+        return;
+    }
+    
+    // Show loading
+    submitBtn.disabled = true;
+    form.style.display = 'none';
+    formLoading.style.display = 'block';
+    
+    const formData = {
+        parentName: document.getElementById('parentName').value,
+        studentName: studentName,
+        parentEmail: parentEmail,
+        parentPhone: parentPhone,
+        level: level,
+        classType: classType,
+        subject: subject,
+        message: document.getElementById('stuMsg').value
+    };
+
     try {
+        // Save to Supabase
         const { data, error } = await supabase
             .from('students')
             .insert([
@@ -192,63 +217,10 @@ async function saveRegistration(formData) {
             ]);
 
         if (error) throw error;
-        return { success: true };
-    } catch (error) {
-        console.error('Error saving to Supabase:', error);
-        return { success: false, error };
-    }
-}
-
-// ==================== FORM SUBMISSION ====================
-document.getElementById('whatsappForm')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const submitBtn = document.getElementById('submitBtn');
-    const formLoading = document.getElementById('formLoading');
-    const form = document.getElementById('whatsappForm');
-    
-    // Validate required fields
-    const studentName = document.getElementById('stuName').value;
-    const parentEmail = document.getElementById('parentEmail').value;
-    const parentPhone = document.getElementById('parentPhone').value;
-    const level = document.getElementById('stuLevel').value;
-    const classType = document.getElementById('classType').value;
-    const subject = document.getElementById('stuSubject').value;
-
-    if (!studentName || !parentEmail || !parentPhone || !level || !classType || !subject) {
-        showToast('Sila lengkapkan semua medan wajib', 'error');
-        return;
-    }
-    
-    // Disable button and show loading
-    submitBtn.disabled = true;
-    form.style.display = 'none';
-    formLoading.style.display = 'block';
-    
-    // Collect form data
-    const formData = {
-        parentName: document.getElementById('parentName').value,
-        studentName: studentName,
-        parentEmail: parentEmail,
-        parentPhone: parentPhone,
-        level: level,
-        classType: classType,
-        subject: subject,
-        message: document.getElementById('stuMsg').value
-    };
-
-    try {
-        // Save to Supabase
-        const result = await saveRegistration(formData);
-        
-        if (!result.success) {
-            throw new Error('Gagal menyimpan data');
-        }
 
         // Send to WhatsApp
         const phoneNumber = "60128258869";
-        
-        let parentInfo = formData.parentName ? `• Nama Ibu/Bapa: ${formData.parentName}\n` : '';
+        const parentInfo = formData.parentName ? `• Nama Ibu/Bapa: ${formData.parentName}\n` : '';
 
         const waText = `Salam Cikgu Dayang, saya berminat untuk mendaftar di *DALe EduHub*.\n\n` +
                      `*Butiran Pendaftaran:*\n` +
@@ -262,34 +234,28 @@ document.getElementById('whatsappForm')?.addEventListener('submit', async functi
                      `• Keputusan/Cita-cita: ${formData.message || "Tiada"}\n\n` +
                      `Terima kasih!`;
 
-        // Open WhatsApp
         window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(waText)}`, '_blank');
-        
-        // Show success message
-        showToast('Pendaftaran berjaya! Data disimpan.', 'success');
-        
-        // Reset form
+        showToast('Pendaftaran berjaya!', 'success');
         form.reset();
         
     } catch (error) {
-        console.error('Submission error:', error);
+        console.error('Error:', error);
         showToast('Ralat berlaku. Sila cuba lagi.', 'error');
     } finally {
-        // Re-enable form
         submitBtn.disabled = false;
         form.style.display = 'block';
         formLoading.style.display = 'none';
     }
 });
 
-// ==================== INITIALIZE ====================
+// Initialize
 document.addEventListener('DOMContentLoaded', function() {
-    // Load testimonials if on testimonials page
-    if (document.getElementById('testimoni-page')?.classList.contains('active')) {
-        loadTestimonials();
-    }
+    console.log('DOM loaded');
     
-    // Handle window resize for mobile menu
+    // Load testimonials on home page
+    loadTestimonials();
+    
+    // Handle window resize
     window.addEventListener('resize', function() {
         if (window.innerWidth > 768 && mobileMenuOpen) {
             toggleMobileMenu();
