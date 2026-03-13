@@ -1,8 +1,57 @@
 // ==================== SUPABASE CONFIG ====================
+// Ganti dengan anon key yang betul dari dashboard
+// CARA DAPAT: Supabase Dashboard -> Project Settings -> API -> anon public
+const SUPABASE_CONFIG = {
+    url: 'https://ktfhmqvuhqlzhkotorsi.supabase.co',
+    // 🔴 TOLONG TUKAR KEY INI dengan anon key dari dashboard awak
+    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0ZmhtcXZ1aHFsemhrb3RvcnNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNTY3NTQsImV4cCI6MjA4ODgzMjc1NH0.yIqlOSSz_40EuFJV2DaLMIaD5Ou6A9ycMQMAxrMohyA'
+};
+
+// Debug: Check config
+console.log('🚀 Initializing Supabase with URL:', SUPABASE_CONFIG.url);
+
+// Initialize Supabase
 const supabase = window.supabase.createClient(
-    'https://ktfhmqvuhqlzhkotorsi.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0ZmhtcXZ1aHFsemhrb3RvcnNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNTY3NTQsImV4cCI6MjA4ODgzMjc1NH0.yIqlOSSz_40EuFJV2DaLMIaD5Ou6A9ycMQMAxrMohyA'
+    SUPABASE_CONFIG.url,
+    SUPABASE_CONFIG.key
 );
+
+// ==================== DEBUG FUNCTIONS ====================
+function showDebug(message, type = 'error') {
+    console.log(`🔍 Debug [${type}]:`, message);
+    const debugDiv = document.getElementById('testimoniDebug');
+    if (debugDiv) {
+        debugDiv.style.display = 'block';
+        debugDiv.innerHTML = `<strong>Debug:</strong> ${message}`;
+        debugDiv.className = `debug-error ${type}`;
+    }
+}
+
+// ==================== TEST CONNECTION ====================
+async function testConnection() {
+    try {
+        console.log('🔄 Testing Supabase connection...');
+        
+        // Test 1: Basic connection
+        const { data, error } = await supabase
+            .from('testimonials')
+            .select('count', { count: 'exact', head: true });
+        
+        if (error) {
+            console.error('❌ Connection test failed:', error);
+            showDebug(`Connection failed: ${error.message}`);
+            return false;
+        }
+        
+        console.log('✅ Connection successful!');
+        return true;
+        
+    } catch (err) {
+        console.error('❌ Connection test error:', err);
+        showDebug(`Connection error: ${err.message}`);
+        return false;
+    }
+}
 
 // ==================== LOAD TESTIMONIALS WITH SWIPER ====================
 async function loadTestimonials() {
@@ -11,23 +60,46 @@ async function loadTestimonials() {
     const loading = document.getElementById('testimoniLoading');
     const swiperContainer = document.getElementById('testimoniSwiper');
     const wrapper = document.getElementById('testimoniWrapper');
+    const debugDiv = document.getElementById('testimoniDebug');
+    
+    // Debug: Check if elements exist
+    console.log('📦 DOM Elements:', {
+        loading: !!loading,
+        swiperContainer: !!swiperContainer,
+        wrapper: !!wrapper,
+        debugDiv: !!debugDiv
+    });
     
     if (!wrapper) {
         console.error('❌ Testimoni wrapper not found!');
+        if (debugDiv) {
+            debugDiv.style.display = 'block';
+            debugDiv.innerHTML = 'Error: Testimoni wrapper tidak dijumpai. HTML mungkin rosak.';
+        }
         return;
     }
     
     try {
-        // Query testimonials from Supabase
+        // Test connection first
+        const connected = await testConnection();
+        if (!connected) {
+            throw new Error('Cannot connect to Supabase');
+        }
+        
+        // Query testimonials
+        console.log('📡 Fetching testimonials from Supabase...');
         const { data, error } = await supabase
             .from('testimonials')
             .select('*')
-            .eq('active', true);
+            .eq('active', true)
+            .order('id', { ascending: false });
 
         if (error) {
-            console.error('❌ Supabase error:', error);
+            console.error('❌ Supabase query error:', error);
             throw error;
         }
+
+        console.log('📊 Query result:', { data, error });
 
         if (data && data.length > 0) {
             console.log(`✅ Got ${data.length} testimonials:`, data);
@@ -36,7 +108,9 @@ async function loadTestimonials() {
             wrapper.innerHTML = '';
             
             // Add testimonials to wrapper
-            data.forEach(t => {
+            data.forEach((t, index) => {
+                console.log(`📝 Testimonial ${index + 1}:`, t.name);
+                
                 const slide = document.createElement('div');
                 slide.className = 'swiper-slide';
                 slide.innerHTML = `
@@ -50,45 +124,74 @@ async function loadTestimonials() {
             });
             
             // Hide loading, show swiper
-            loading.style.display = 'none';
-            swiperContainer.style.display = 'block';
-            
-            // Initialize Swiper
-            new Swiper('.mySwiper', {
-                slidesPerView: 1,
-                spaceBetween: 20,
-                loop: true,
-                autoplay: {
-                    delay: 5000,
-                    disableOnInteraction: false,
-                },
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                breakpoints: {
-                    640: {
-                        slidesPerView: 2,
-                        spaceBetween: 30,
-                    },
-                    1024: {
-                        slidesPerView: 3,
-                        spaceBetween: 30,
-                    }
+            if (loading) loading.style.display = 'none';
+            if (swiperContainer) {
+                swiperContainer.style.display = 'block';
+                
+                // Initialize Swiper
+                try {
+                    const swiper = new Swiper('.mySwiper', {
+                        slidesPerView: 1,
+                        spaceBetween: 20,
+                        loop: true,
+                        autoplay: {
+                            delay: 5000,
+                            disableOnInteraction: false,
+                        },
+                        pagination: {
+                            el: '.swiper-pagination',
+                            clickable: true,
+                        },
+                        breakpoints: {
+                            640: {
+                                slidesPerView: 2,
+                                spaceBetween: 30,
+                            },
+                            1024: {
+                                slidesPerView: 3,
+                                spaceBetween: 30,
+                            }
+                        }
+                    });
+                    console.log('✅ Swiper initialized');
+                } catch (swiperError) {
+                    console.error('❌ Swiper error:', swiperError);
                 }
-            });
+            }
+            
+            // Hide debug if visible
+            if (debugDiv) debugDiv.style.display = 'none';
             
         } else {
             console.log('⚠️ No testimonials found');
             wrapper.innerHTML = '<div class="swiper-slide"><div class="testi-card">Tiada testimoni buat masa ini.</div></div>';
-            loading.style.display = 'none';
-            swiperContainer.style.display = 'block';
+            if (loading) loading.style.display = 'none';
+            if (swiperContainer) swiperContainer.style.display = 'block';
         }
+        
     } catch (err) {
-        console.error('❌ Error loading testimonials:', err);
-        wrapper.innerHTML = '<div class="swiper-slide"><div class="testi-card">Gagal memuatkan testimoni.</div></div>';
-        loading.style.display = 'none';
-        swiperContainer.style.display = 'block';
+        console.error('❌ Fatal error loading testimonials:', err);
+        
+        // Show error in debug div
+        if (debugDiv) {
+            debugDiv.style.display = 'block';
+            debugDiv.innerHTML = `
+                <strong>Error loading testimonials:</strong><br>
+                ${err.message}<br><br>
+                <strong>Troubleshooting:</strong><br>
+                1. Check Supabase URL and key<br>
+                2. Make sure table 'testimonials' exists<br>
+                3. Check if RLS policies allow SELECT
+            `;
+        }
+        
+        // Show error message in swiper
+        if (wrapper) {
+            wrapper.innerHTML = '<div class="swiper-slide"><div class="testi-card">Gagal memuatkan testimoni. Sila cuba sebentar lagi.</div></div>';
+        }
+        
+        if (loading) loading.style.display = 'none';
+        if (swiperContainer) swiperContainer.style.display = 'block';
     }
 }
 
@@ -96,14 +199,12 @@ async function loadTestimonials() {
 document.getElementById('whatsappForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    // Show loading
+    console.log('📝 Form submitted');
+    
+    // Get elements
     const submitBtn = document.getElementById('submitBtn');
     const formLoading = document.getElementById('formLoading');
-    const originalText = submitBtn.innerHTML;
-    
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-    submitBtn.disabled = true;
-    if (formLoading) formLoading.style.display = 'block';
+    const originalText = submitBtn ? submitBtn.innerHTML : 'Hantar';
     
     // Get form values
     const parentName = document.getElementById('parentName')?.value || '';
@@ -115,18 +216,33 @@ document.getElementById('whatsappForm')?.addEventListener('submit', async functi
     const stuSubject = document.getElementById('stuSubject')?.value;
     const stuMsg = document.getElementById('stuMsg')?.value || '';
     
+    console.log('📋 Form data:', {
+        parentName, stuName, parentEmail, parentPhone, stuLevel, classType, stuSubject
+    });
+    
     // Validate required fields
     if (!stuName || !parentEmail || !parentPhone || !stuLevel || !classType || !stuSubject) {
-        showToast('Sila lengkapkan semua ruangan wajib', 'error');
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-        if (formLoading) formLoading.style.display = 'none';
+        alert('Sila lengkapkan semua ruangan wajib');
         return;
     }
     
+    // Show loading
+    if (submitBtn) {
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+        submitBtn.disabled = true;
+    }
+    if (formLoading) formLoading.style.display = 'block';
+    
     try {
+        // Test connection first
+        const connected = await testConnection();
+        if (!connected) {
+            throw new Error('Cannot connect to database');
+        }
+        
         // Save to Supabase
-        const { error } = await supabase
+        console.log('💾 Saving to Supabase...');
+        const { data, error } = await supabase
             .from('students')
             .insert([{
                 name: stuName,
@@ -142,7 +258,7 @@ document.getElementById('whatsappForm')?.addEventListener('submit', async functi
             throw error;
         }
         
-        console.log('✅ Data saved to Supabase');
+        console.log('✅ Data saved to Supabase:', data);
         
         // Create WhatsApp message
         const waText = `*PENDAFTARAN KELAS DALe EduHub*%0A%0A` +
@@ -156,7 +272,9 @@ document.getElementById('whatsappForm')?.addEventListener('submit', async functi
             `Catatan: ${stuMsg || 'Tiada catatan'}`;
         
         // Open WhatsApp
-        window.open(`https://wa.me/60128258869?text=${waText}`, '_blank');
+        const waUrl = `https://wa.me/60128258869?text=${waText}`;
+        console.log('📱 Opening WhatsApp:', waUrl);
+        window.open(waUrl, '_blank');
         
         // Show success
         showToast('Pendaftaran berjaya! Anda akan diredirect ke WhatsApp.', 'success');
@@ -165,12 +283,14 @@ document.getElementById('whatsappForm')?.addEventListener('submit', async functi
         this.reset();
         
     } catch (err) {
-        console.error('❌ Error:', err);
-        showToast('Gagal menghantar pendaftaran. Sila cuba lagi.', 'error');
+        console.error('❌ Form error:', err);
+        alert(`Gagal menghantar pendaftaran: ${err.message}. Sila cuba lagi.`);
     } finally {
         // Reset button
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
+        if (submitBtn) {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
         if (formLoading) formLoading.style.display = 'none';
     }
 });
@@ -178,11 +298,13 @@ document.getElementById('whatsappForm')?.addEventListener('submit', async functi
 // ==================== TOAST FUNCTION ====================
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
-    const toastMessage = document.getElementById('toastMessage');
     
-    if (!toast || !toastMessage) return;
+    if (!toast) {
+        alert(message);
+        return;
+    }
     
-    toastMessage.textContent = message;
+    toast.textContent = message;
     toast.className = `toast ${type}`;
     toast.classList.add('show');
     
@@ -206,15 +328,74 @@ function toggleMobileMenu() {
 // ==================== CLOSE MOBILE MENU ON CLICK ====================
 document.querySelectorAll('.nav-links a').forEach(link => {
     link.addEventListener('click', () => {
-        const navLinks = document.querySelector('.nav-links');
         if (window.innerWidth <= 768) {
-            navLinks.style.display = 'none';
+            const navLinks = document.querySelector('.nav-links');
+            if (navLinks) navLinks.style.display = 'none';
         }
     });
 });
 
+// ==================== CHECK SUPABASE SETUP ====================
+async function checkSupabaseSetup() {
+    console.log('🔧 Checking Supabase setup...');
+    
+    try {
+        // Check if table exists
+        const { data, error } = await supabase
+            .from('testimonials')
+            .select('id')
+            .limit(1);
+        
+        if (error) {
+            console.error('❌ Table check failed:', error);
+            
+            // Show error in debug
+            const debugDiv = document.getElementById('testimoniDebug');
+            if (debugDiv) {
+                debugDiv.style.display = 'block';
+                debugDiv.innerHTML = `
+                    <strong>⚠️ Supabase Setup Required:</strong><br>
+                    Table 'testimonials' not found or no access.<br><br>
+                    <strong>Please run this SQL in Supabase SQL Editor:</strong><br>
+                    <pre style="background:#f5f5f5; padding:10px; overflow:auto;">
+CREATE TABLE IF NOT EXISTS testimonials (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    role TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    message TEXT NOT NULL,
+    rating INTEGER DEFAULT 5,
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+INSERT INTO testimonials (name, role, subject, message) VALUES
+('Cik Syuhada', 'Pelajar', 'Matematik', 'Kelas dengan cikgu Dayang sangat okay.'),
+('Encik Azimy', 'Ibu Bapa', 'Sains Komputer', 'Anak saya faham dengan kelas cikgu Dayang.');
+                    </pre>
+                `;
+            }
+        } else {
+            console.log('✅ Table exists');
+        }
+        
+    } catch (err) {
+        console.error('❌ Setup check error:', err);
+    }
+}
+
 // ==================== INITIALIZE ====================
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Page loaded, initializing...');
+    
+    // Show connection info
+    console.log('🔗 Supabase URL:', SUPABASE_CONFIG.url);
+    console.log('🔑 Key length:', SUPABASE_CONFIG.key.length);
+    
+    // Run checks and load data
+    checkSupabaseSetup();
     loadTestimonials();
+    
+    // Test connection every 30 seconds for debugging
+    setInterval(testConnection, 30000);
 });
