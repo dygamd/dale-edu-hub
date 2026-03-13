@@ -54,9 +54,13 @@ async function loadTestimonials() {
                 html += `
                 <div class="swiper-slide">
                     <div class="testi-card">
-                        <div class="testi-text">"${t.message}"</div>
-                        <div class="testi-name">${t.name}</div>
-                        <div class="testi-subject">${t.subject}</div>
+                        <div class="testi-content">
+                            <div class="testi-text">"${t.message}"</div>
+                        </div>
+                        <div class="testi-footer">
+                            <div class="testi-name">${t.name}</div>
+                            <div class="testi-subject">${t.subject}</div>
+                        </div>
                     </div>
                 </div>`;
             });
@@ -84,7 +88,11 @@ async function loadTestimonials() {
         } else {
             testimoniWrapper.innerHTML = `
                 <div class="swiper-slide">
-                    <div class="testi-card">Tiada testimoni buat masa ini.</div>
+                    <div class="testi-card">
+                        <div class="testi-content">
+                            <div class="testi-text">Tiada testimoni buat masa ini.</div>
+                        </div>
+                    </div>
                 </div>`;
             if (testimoniSwiper) testimoniSwiper.style.display = 'block';
         }
@@ -94,7 +102,11 @@ async function loadTestimonials() {
         if (testimoniWrapper) {
             testimoniWrapper.innerHTML = `
                 <div class="swiper-slide">
-                    <div class="testi-card">Gagal memuatkan testimoni.</div>
+                    <div class="testi-card">
+                        <div class="testi-content">
+                            <div class="testi-text">Gagal memuatkan testimoni.</div>
+                        </div>
+                    </div>
                 </div>`;
         }
         if (testimoniSwiper) testimoniSwiper.style.display = 'block';
@@ -147,13 +159,21 @@ if (elements.whatsappForm) {
             if (insertError) throw insertError;
 
             showToast('Pendaftaran berjaya!', 'success');
+            
+            const clientName = formData.parentName ? formData.parentName : formData.stuName;
 
             const waMsg = `*PENDAFTARAN DALE EDUHUB*%0A%0A` +
-                `👤 *Pelajar:* ${formData.stuName}%0A` +
-                `📚 *Tingkatan:* ${formData.stuLevel}%0A` +
-                `📖 *Subjek:* ${formData.stuSubject}%0A` +
-                `📞 *Telefon:* ${formData.parentPhone}%0A` +
-                `📧 *Email:* ${formData.parentEmail}`;
+                `Assalamualaikum Cikgu Dayang,%0A` +
+                `Saya ${clientName} ingin mendaftar.%0A%0A` +
+                `*PELAJAR:* ${formData.stuName}%0A` +
+                `*TINGKATAN:* ${formData.stuLevel}%0A` +
+                `*SUBJEK:* ${formData.stuSubject}%0A` +
+                `*KELAS:* ${formData.classType}%0A%0A` +
+                `*PENJAGA:* ${formData.parentName || 'Tiada'}}%0A` +
+                `*TELEFON:* ${formData.parentPhone}%0A` +
+                `*EMAIL:* ${formData.parentEmail}%0A%0A` +
+                `*CATATAN:* ${formData.stuMsg || 'Tiada catatan'}}%0A%0A` +
+                `Terima kasih.`;
             
             setTimeout(() => {
                 window.open(`https://wa.me/60128258869?text=${waMsg}`, '_blank');
@@ -175,7 +195,6 @@ function toggleMobileMenu() {
     }
 }
 
-// Close mobile menu when clicking a link
 document.querySelectorAll('.nav-links a').forEach(link => {
     link.addEventListener('click', () => {
         const navLinks = document.querySelector('.nav-links');
