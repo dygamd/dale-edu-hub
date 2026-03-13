@@ -169,10 +169,10 @@ if (elements.whatsappForm) {
                 `*TINGKATAN:* ${formData.stuLevel}%0A` +
                 `*SUBJEK:* ${formData.stuSubject}%0A` +
                 `*KELAS:* ${formData.classType}%0A%0A` +
-                `*PENJAGA:* ${formData.parentName || 'Tiada'}}%0A` +
+                `*PENJAGA:* ${formData.parentName || 'Tiada'}%0A` +
                 `*TELEFON:* ${formData.parentPhone}%0A` +
                 `*EMAIL:* ${formData.parentEmail}%0A%0A` +
-                `*CATATAN:* ${formData.stuMsg || 'Tiada catatan'}}%0A%0A` +
+                `*CATATAN:* ${formData.stuMsg || 'Tiada catatan'}%0A%0A` +
                 `Terima kasih.`;
             
             setTimeout(() => {
